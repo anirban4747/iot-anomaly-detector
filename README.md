@@ -21,7 +21,7 @@ The repository implements a highly optimized <b>XGBoost Classifier</b> that proc
 
 <h2>Architecture</h2>
 
-<p>The pipeline consists of two primary modules:</p>
+<p>The pipeline consists of three primary modules:</p>
 
 <h3><code>preprocess.py</code> — Data Pipeline & Stratification</h3>
 
@@ -53,6 +53,14 @@ The repository implements a highly optimized <b>XGBoost Classifier</b> that proc
         </ul>
     </li>
     <li>Serializes and exports the trained model (<code>.pkl</code>) along with the scaler parameters for future deployment.</li>
+</ul>
+
+<h3><code>extractor.py</code> — Live Traffic Feature Extraction</h3>
+
+<ul>
+    <li>Parses raw <code>.pcap</code> network captures using <b>Scapy</b>.</li>
+    <li>Aggregates packets into fixed, non-overlapping windows, computing statistical features (mean/std packet size, packet rate, mean inter-arrival time) that mirror the structure of the training dataset.</li>
+    <li>Designed to run on freshly captured live traffic, enabling inference outside of pre-computed dataset features.</li>
 </ul>
 
 <hr>
@@ -123,7 +131,7 @@ source venv/bin/activate
 <h3>Install Dependencies</h3>
 
 ```bash
-pip install pandas numpy scikit-learn xgboost joblib
+pip install -r requirements.txt
 ```
 
 <h3>Prepare the Dataset</h3>
@@ -139,6 +147,7 @@ project/
 │
 ├── preprocess.py
 ├── train.py
+├── extractor.py
 └── ...
 ```
 
@@ -146,7 +155,7 @@ project/
 
 <h2>Usage</h2>
 
-<p>Execute the preprocessing and model training pipeline:</p>
+<h3>Train the Model</h3>
 
 ```bash
 python train.py
@@ -160,6 +169,23 @@ python train.py
     <li>Evaluate model performance</li>
     <li>Export the trained model and scaler</li>
 </ul>
+
+<h3>Extract Features from a Live Capture</h3>
+
+```bash
+python extractor.py
+```
+
+<p>
+By default this runs a standalone check. To extract features from an actual <code>.pcap</code> file, import and call the function directly:
+</p>
+
+```python
+from extractor import extract_live_features
+
+features_df = extract_live_features("captures/traffic.pcap", window_size=100)
+print(features_df)
+```
 
 <hr>
 
@@ -178,7 +204,7 @@ Although perfect accuracy often indicates overfitting in conventional machine le
 <h2>Future Enhancements</h2>
 
 <ul>
-    <li>Implement an edge-deployable live packet extraction module.</li>
+    <li>Connect <code>extractor.py</code> output directly into the trained model for real-time, end-to-end inference (currently extraction and prediction are separate steps).</li>
     <li>Support additional attack families such as Gafgyt and TCP/HTTP floods.</li>
     <li>Train on multiple IoT device types for improved generalization.</li>
     <li>Convert the XGBoost model to lightweight deployment formats such as <b>ONNX</b> or <b>TensorFlow Lite</b>.</li>
@@ -191,6 +217,6 @@ Although perfect accuracy often indicates overfitting in conventional machine le
 
 <p align="center">
 
-Python • Pandas • NumPy • Scikit-Learn • XGBoost • Joblib
+Python • Pandas • NumPy • Scikit-Learn • XGBoost • Joblib • Scapy
 
 </p>
