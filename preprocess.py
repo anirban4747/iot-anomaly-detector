@@ -6,8 +6,8 @@ from sklearn.preprocessing import StandardScaler
 def load_and_structure_data(normal_path, attack_path):
     print("Structuring streaming data logs...")
     
-    normal_df = pd.read_csv(normal_path)
-    attack_df = pd.read_csv(attack_path)
+    normal_df = pd.read_csv(normal_path).copy()
+    attack_df = pd.read_csv(attack_path).copy()
     
     normal_df['label'] = 0
     attack_df['label'] = 1
