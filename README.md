@@ -27,6 +27,7 @@ The repository implements a highly optimized <b>XGBoost Classifier</b> that proc
 
 <ul>
     <li>Ingests pre-computed network feature datasets (115 statistical features per packet).</li>
+    <li>Resolves Pandas memory fragmentation warnings via frame copying.</li>
     <li>Dynamically labels traffic:
         <ul>
             <li><b>0</b> → Benign</li>
